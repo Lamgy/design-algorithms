@@ -11,7 +11,6 @@ public class DeterministicSelect {
         this.metrics = metrics;
     }
 
-    // Entry point
     public int select(int[] arr, int k) {
         if (arr == null || arr.length == 0 || k < 0 || k >= arr.length) {
             throw new IllegalArgumentException("Invalid input");

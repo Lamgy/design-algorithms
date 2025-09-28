@@ -15,7 +15,7 @@ public class DeterministicSelectTest {
         Random rand = new Random();
         int[] arr = new int[size];
         for (int i = 0; i < size; i++) {
-            arr[i] = rand.nextInt(10000); // numbers between 0–9999
+            arr[i] = rand.nextInt(10000);
         }
         return arr;
     }
@@ -32,11 +32,9 @@ public class DeterministicSelectTest {
         int result = select.select(arr, k);
         long end = System.nanoTime();
 
-        // ✅ Check correctness against sorted array
         assertEquals(arrCopy[k], result);
 
-        // Only reached if correct
-        double elapsedMs = (end - start) / 1_000_000.0;
+        double elapsedMs = (end - start) / 1000000.0;
 
         CsvWriter writer = new CsvWriter("results.csv");
         writer.writeHeaderIfNeeded();
@@ -45,7 +43,7 @@ public class DeterministicSelectTest {
 
     @Test
     void testSelect10() {
-        runAndRecord(10, 5); // pick middle element
+        runAndRecord(10, 5);
     }
 
     @Test
