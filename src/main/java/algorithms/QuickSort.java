@@ -23,7 +23,7 @@ public class QuickSort {
         metrics.enterRecursion();
         while (left < right) {
             int pivotIndex = left + rand.nextInt(right - left + 1);
-            int pivotNewIndex = ArrayUtils.partition(arr, left, right, pivotIndex);
+            int pivotNewIndex = ArrayUtils.partition(arr, left, right, pivotIndex, metrics);
 
             if (pivotNewIndex - left < right - pivotNewIndex) {
                 quickSort(arr, left, pivotNewIndex - 1);
