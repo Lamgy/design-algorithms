@@ -2,8 +2,7 @@ package algorithms;
 
 import util.Metrics;
 
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.*;
 
 public class ClosestPair {
 
@@ -15,99 +14,117 @@ public class ClosestPair {
 
     public double findClosest(Point[] points) {
         if (points == null || points.length < 2) return Double.POSITIVE_INFINITY;
+        if (points.length == 2) return dist(points[0], points[1]);
 
+        // Sort points by x and y
         Point[] px = points.clone();
         Arrays.sort(px, Comparator.comparingInt(p -> p.x));
 
         Point[] py = points.clone();
         Arrays.sort(py, Comparator.comparingInt(p -> p.y));
 
-        double bestSq = closest(px, 0, px.length - 1, py);
-        return Math.sqrt(bestSq);
+        return closest(px, py, px.length);
     }
 
-    private double closest(Point[] px, int left, int right, Point[] py) {
+    private double closest(Point[] px, Point[] py, int n) {
         metrics.enterRecursion();
 
-        int n = right - left + 1;
+        // Handle small subproblems directly
         if (n <= 3) {
-            double d2 = bruteForceSquared(px, left, right);
+            double d = bruteForce(px, n);
             metrics.exitRecursion();
-            return d2;
+            return d;
         }
 
-        int mid = (left + right) >>> 1;
+        int mid = n / 2;
         Point midPoint = px[mid];
-        int leftSize = mid - left + 1;
-        int rightSize = right - mid;
 
-        Point[] pyl = new Point[leftSize];
-        Point[] pyr = new Point[rightSize];
-        int li = 0, ri = 0;
+        // Divide px into left and right
+        Point[] pxLeft = Arrays.copyOfRange(px, 0, mid);
+        Point[] pxRight = Arrays.copyOfRange(px, mid, n);
+
+        // Divide py into left and right without HashSet (duplicate-safe, faster)
+        List<Point> pylList = new ArrayList<>();
+        List<Point> pyrList = new ArrayList<>();
         for (Point p : py) {
-            if (p.x < midPoint.x) {
-                if (li < leftSize) pyl[li++] = p;
-                else pyr[ri++] = p;
-            } else if (p.x > midPoint.x) {
-                if (ri < rightSize) pyr[ri++] = p;
-                else pyl[li++] = p;
+            if (p.x <= midPoint.x) {
+                pylList.add(p);
             } else {
-                if (li < leftSize) pyl[li++] = p;
-                else pyr[ri++] = p;
+                pyrList.add(p);
             }
         }
 
-        double dl2 = closest(px, left, mid, pyl);
-        double dr2 = closest(px, mid + 1, right, pyr);
-        double d2 = Math.min(dl2, dr2);
+        Point[] pyl = pylList.toArray(new Point[0]);
+        Point[] pyr = pyrList.toArray(new Point[0]);
 
-        int stripCount = 0;
-        Point[] strip = new Point[py.length];
+        // Recursive calls
+        double dl = closest(pxLeft, pyl, pxLeft.length);
+        double dr = closest(pxRight, pyr, pxRight.length);
+
+        double d = Math.min(dl, dr);
+
+        // Build strip of points close to mid line
+        List<Point> strip = new ArrayList<>();
         for (Point p : py) {
-            long dx = (long) p.x - midPoint.x;
-            if ((double) dx * dx < d2) {
-                strip[stripCount++] = p;
+            if (Math.abs((long) p.x - midPoint.x) < d) {
+                strip.add(p);
             }
         }
 
-        double best = d2;
-        for (int i = 0; i < stripCount; i++) {
-            Point a = strip[i];
-            for (int j = i + 1; j < stripCount; j++) {
-                Point b = strip[j];
-                long dy = (long) b.y - a.y;
-                double dy2 = (double) dy * dy;
-                if (dy2 >= best) break;
+        // Check strip pairs
+        double min = d;
+        for (int i = 0; i < strip.size(); i++) {
+            for (int j = i + 1; j < strip.size() && (strip.get(j).y - strip.get(i).y) < min; j++) {
                 metrics.incComparisons();
-                double dist2 = distSquared(a, b);
-                if (dist2 < best) best = dist2;
+                min = Math.min(min, dist(strip.get(i), strip.get(j)));
+                if (min == 0) { // early exit on duplicates
+                    metrics.exitRecursion();
+                    return 0.0;
+                }
             }
         }
 
         metrics.exitRecursion();
-        return Math.min(d2, best);
+        return Math.min(d, min);
     }
 
-    private double bruteForceSquared(Point[] px, int left, int right) {
-        double best = Double.POSITIVE_INFINITY;
-        for (int i = left; i <= right; i++) {
-            for (int j = i + 1; j <= right; j++) {
+    private double bruteForce(Point[] pts, int n) {
+        double min = Double.POSITIVE_INFINITY;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
                 metrics.incComparisons();
-                double d2 = distSquared(px[i], px[j]);
-                if (d2 < best) best = d2;
+                min = Math.min(min, dist(pts[i], pts[j]));
+                if (min == 0) return 0.0; // duplicates shortcut
             }
         }
-        return best;
+        return min;
     }
 
-    private double distSquared(Point a, Point b) {
+    private double dist(Point a, Point b) {
         long dx = (long) a.x - b.x;
         long dy = (long) a.y - b.y;
-        return (double) dx * dx + (double) dy * dy;
+        return Math.sqrt(dx * dx + dy * dy);
     }
 
     public static class Point {
         public final int x, y;
-        public Point(int x, int y) { this.x = x; this.y = y; }
+
+        public Point(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof Point)) return false;
+            Point p = (Point) o;
+            return x == p.x && y == p.y;
+        }
+
+        @Override
+        public int hashCode() {
+            return 31 * x + y;
+        }
     }
 }
