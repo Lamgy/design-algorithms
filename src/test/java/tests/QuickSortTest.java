@@ -38,7 +38,7 @@ public class QuickSortTest {
 
         CsvWriter writer = new CsvWriter("results.csv");
         writer.writeHeaderIfNeeded();
-        writer.writeRow(size, metrics.comparisons, metrics.maxDepth, elapsedMs);
+        writer.writeRow("QuickSort", size, metrics.comparisons, metrics.maxDepth, elapsedMs);
     }
 
     @Test

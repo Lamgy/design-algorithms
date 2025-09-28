@@ -12,12 +12,13 @@ public class ArrayUtils {
         arr[j] = temp;
     }
 
-    public static int partition(int[] arr, int left, int right, int pivotIndex) {
+    public static int partition(int[] arr, int left, int right, int pivotIndex, Metrics metrics) {
         int pivotValue = arr[pivotIndex];
         swap(arr, pivotIndex, right);
         int storeIndex = left;
 
         for (int i = left; i < right; i++) {
+            if (metrics != null) metrics.incComparisons();
             if (arr[i] < pivotValue) {
                 swap(arr, i, storeIndex);
                 storeIndex++;
