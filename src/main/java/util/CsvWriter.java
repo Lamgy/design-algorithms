@@ -20,18 +20,16 @@ public class CsvWriter {
         }
     }
 
-    // convenience method for metrics (comparisons is long)
-    public void writeRow(int n, long comparisons, int depth, double timeMs) {
-        String line = n + "," + comparisons + "," + depth + "," + timeMs;
+    public void writeRow(String name, int n, long comparisons, int depth, double timeMs) {
+        String line = name + " (" + n + "," + comparisons + "," + depth + "," + timeMs + ")";
         writeLine(line);
     }
 
-    // optionally write header only if file doesn't exist yet
     public void writeHeaderIfNeeded() {
         try {
             Path p = Path.of(file);
             if (!Files.exists(p)) {
-                writeLine("n,comparisons,depth,time_ms");
+                writeLine("name (n,comparisons,depth,time_ms)");
             }
         } catch (Exception e) {
             e.printStackTrace();

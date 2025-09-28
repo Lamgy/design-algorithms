@@ -1,0 +1,7 @@
+name (n,comparisons,depth,time_ms)
+MergeSort (100,571,5,0.5136)
+MergeSort (10,28,2,0.0102)
+MergeSort (1000,9113,8,1.0006)
+QuickSort (100,597,5,0.4147)
+QuickSort (10,22,3,0.0148)
+QuickSort (1000,10628,7,0.7991)

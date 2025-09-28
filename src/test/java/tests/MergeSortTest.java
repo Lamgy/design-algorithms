@@ -38,7 +38,7 @@ public class MergeSortTest {
 
         CsvWriter writer = new CsvWriter("results.csv");
         writer.writeHeaderIfNeeded();
-        writer.writeRow(size, metrics.comparisons, metrics.maxDepth, elapsedMs);
+        writer.writeRow("MergeSort", size, metrics.comparisons, metrics.maxDepth, elapsedMs);
     }
 
     @Test
