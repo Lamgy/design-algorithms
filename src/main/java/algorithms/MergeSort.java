@@ -1,5 +1,6 @@
 package algorithms;
 import util.Metrics;
+import util.ArrayUtils;
 
 public class MergeSort {
 
@@ -10,26 +11,27 @@ public class MergeSort {
     }
 
     public void mergeSort(int[] arr) {
+        if (ArrayUtils.isTrivial(arr)) return;
         int[] buffer = new int[arr.length];
         mergeSort(arr, buffer, 0, arr.length - 1);
     }
 
-    void InsertionSort(int[] buffer, int left, int right) {
+    void InsertionSort(int[] arr, int left, int right) {
         for (int i = left + 1; i <= right; i++) {
-            int temp = buffer[i];
+            int temp = arr[i];
             int j = i - 1;
 
             while (j >= left) {
                 metrics.incComparisons();
-                if (buffer[j] > temp) {
-                    buffer[j + 1] = buffer[j];
+                if (arr[j] > temp) {
+                    arr[j + 1] = arr[j];
                     j--;
                 } else {
                     break;
                 }
             }
 
-            buffer[j + 1] = temp;
+            arr[j + 1] = temp;
         }
     }
 
