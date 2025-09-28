@@ -1,0 +1,5 @@
+"Benchmark","Mode","Threads","Samples","Score","Score Error (99,9%)","Unit"
+"benchmarks.SelectBench.testArraysSort","avgt",1,10,"0,477068","0,032252","ms/op"
+"benchmarks.SelectBench.testMergeSort","avgt",1,10,"0,748343","0,035172","ms/op"
+"benchmarks.SelectBench.testQuickSort","avgt",1,10,"0,625653","0,014338","ms/op"
+"benchmarks.SelectBench.testSelect","avgt",1,10,"0,286906","0,028804","ms/op"
