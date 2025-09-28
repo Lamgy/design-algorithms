@@ -1,9 +1,12 @@
 package algorithms;
 
+import util.ArrayUtils;
 import util.Metrics;
+
 import java.util.Random;
 
 public class QuickSort {
+
     private final Metrics metrics;
     private final Random rand = new Random();
 
@@ -12,6 +15,7 @@ public class QuickSort {
     }
 
     public void quickSort(int[] arr) {
+        if (ArrayUtils.isTrivial(arr)) return;
         quickSort(arr, 0, arr.length - 1);
     }
 
@@ -19,44 +23,18 @@ public class QuickSort {
         metrics.enterRecursion();
         while (left < right) {
             int pivotIndex = left + rand.nextInt(right - left + 1);
-            int pivotValue = arr[pivotIndex];
+            int pivotNewIndex = ArrayUtils.partition(arr, left, right, pivotIndex);
 
-            int i = left;
-            int j = right;
-            while (i <= j) {
-                while (arr[i] < pivotValue) {
-                    metrics.incComparisons();
-                    i++;
-                }
-                while (arr[j] > pivotValue) {
-                    metrics.incComparisons();
-                    j--;
-                }
-                if (i <= j) {
-                    swap(arr, i, j);
-                    i++;
-                    j--;
-                }
-            }
-
-            if (j - left < right - i) {
-                if (left < j) {
-                    quickSort(arr, left, j);
-                }
-                left = i;
+            if (pivotNewIndex - left < right - pivotNewIndex) {
+                quickSort(arr, left, pivotNewIndex - 1);
+                left = pivotNewIndex + 1;
             } else {
-                if (i < right) {
-                    quickSort(arr, i, right);
-                }
-                right = j;
+                quickSort(arr, pivotNewIndex + 1, right);
+                right = pivotNewIndex - 1;
             }
         }
         metrics.exitRecursion();
     }
 
-    private void swap(int[] arr, int i, int j) {
-        int tmp = arr[i];
-        arr[i] = arr[j];
-        arr[j] = tmp;
-    }
+
 }
